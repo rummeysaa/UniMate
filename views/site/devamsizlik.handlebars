@@ -1,0 +1,87 @@
+
+{{> header 
+pageButtons='
+<div class="user-menu" id="userMenu">
+  <img src="/img/user-icon.png" alt="kullanıcı ikonu" />
+  <div id="userDropdownToggle" style="display: flex; align-items: center; cursor: pointer;">
+    <span id="userName"></span>
+    <span class="arrow" id="arrow">▾</span>
+  </div>
+  <div class="dropdown" id="dropdown" style="display:none; position:absolute; background:white; border:1px solid #ccc; padding:5px;">
+    <a href="/login/logout" style="text-decoration: none; color: inherit;"><button id="logoutBtn">Çıkış Yap</button></a>
+    <button id="deleteAccountBtn">Hesabı Sil</button>
+  </div>
+</div>'
+}}
+
+  <main class="absence-page">
+<h2>DEVAMSIZLIK</h2>
+  <form id="absenceForm" class="absence-form">
+    <div class="form-row">
+      <label for="lessonName">Ders Adı</label>
+      <input type="text" id="lessonName" required>
+    </div>
+    <div class="form-row">
+      <label for="totalWeeks">Toplam Hafta Sayısı</label>
+      <input type="number" id="totalWeeks" min="1" required>
+    </div>
+    <div class="form-row">
+      <label for="weeklyHours">Haftalık Ders Saati</label>
+      <input type="number" id="weeklyHours" min="1" required>
+    </div>
+    <div class="form-row">
+      <label for="absencePercent">Devamsızlık Hakkı (%)</label>
+      <input type="number" id="absencePercent" min="0" max="100" required>
+    </div>
+    <div class="form-row">
+      <label for="missedHours">Girmediğiniz Ders (Saat olarak)</label>
+      <input type="number" id="missedHours" min="0" step="0.5" required>
+    </div>
+    <button type="submit">HESAPLA</button>
+  </form>
+  <div id="absenceResult" class="absence-results"></div>
+  </main>
+
+<script>
+// Sayfa yüklendiğinde kullanıcı adını ayarla
+document.addEventListener('DOMContentLoaded', function() {
+  const userNameElement = document.getElementById('userName');
+  const userName = "{{userName}}";
+  
+  if (userName) {
+    userNameElement.textContent = userName;
+    console.log("Kullanıcı adı ayarlandı:", userName);
+  } else {
+    console.log("Kullanıcı adı bulunamadı");
+  }
+
+  document.getElementById("userDropdownToggle").addEventListener("click", function() {
+    const dropdown = document.getElementById("dropdown");
+    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  });
+
+  document.getElementById("deleteAccountBtn").addEventListener("click", async function() {
+    if (confirm("Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!")) {
+      try {
+        const response = await fetch("/login/delete-account", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(data.message);
+          window.location.href = data.redirect;
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        console.error("Hesap silme hatası:", err);
+        alert("Hesap silinirken bir hata oluştu");
+      }
+    }
+  });
+});
+</script>

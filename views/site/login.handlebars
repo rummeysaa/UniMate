@@ -1,0 +1,88 @@
+{{>header pageButtons="<button id='login-button'>GİRİŞ YAP</button>"}}
+
+<main class="login-container">
+  <form class="login-form" id="loginForm">
+    <h2 class="section-title">GİRİŞ</h2>
+
+    <label for="email">E-MAİL</label>
+    <input type="email" id="email" name="email" placeholder="E-posta adresinizi girin" required autocomplete="usermail">
+
+    <label for="password">ŞİFRE</label>
+    <input type="password" id="password" name="password" placeholder="Şifrenizi girin" required autocomplete="current-password">
+
+    <a href="#" class="forgot-password" id="forgotPasswordLink">Şifremi Unuttum</a>
+    
+    <button type="submit" class="login-button">GİRİŞ</button>
+  </form>
+  <div id="forgotPasswordModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:999; align-items:center; justify-content:center;">
+  <div style="background:white; padding:32px 24px; border-radius:12px; max-width:350px; margin:auto; display:flex; flex-direction:column; gap:16px;">
+    <h3>Şifre Sıfırlama</h3>
+    <input type="email" id="forgotEmail" placeholder="E-posta adresiniz" style="padding:8px; font-size:1rem;" required>
+    <button id="sendResetLink" style="padding:8px 16px;">Sıfırlama Linki Gönder</button>
+    <button id="closeForgotModal" style="background:#eee; color:#333; border:none; padding:6px 12px; border-radius:6px;">Kapat</button>
+  </div>
+</div>
+</main>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    console.log('Login response:', data); // Debug için
+    
+    if (data.success) {
+      window.location.href = data.redirect;
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Giriş yapılırken bir hata oluştu');
+  }
+});
+
+document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('forgotPasswordModal').style.display = 'flex';
+});
+
+document.getElementById('closeForgotModal').addEventListener('click', function() {
+  document.getElementById('forgotPasswordModal').style.display = 'none';
+});
+
+document.getElementById('sendResetLink').addEventListener('click', async function() {
+  const email = document.getElementById('forgotEmail').value;
+  if (!email) {
+    alert("Lütfen e-posta adresinizi girin.");
+    return;
+  }
+  try {
+    const response = await fetch('/login/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    alert(data.message);
+    if (data.success) {
+      document.getElementById('forgotPasswordModal').style.display = 'none';
+    }
+  } catch (err) {
+    alert("Bir hata oluştu, lütfen tekrar deneyin.");
+  }
+});
+</script>
+

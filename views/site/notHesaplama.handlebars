@@ -1,0 +1,351 @@
+  <style>
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .form-row label {
+      font-weight: bold;
+      color: #0b0b40;
+      min-width: 90px;
+    }
+    .form-row select {
+      padding: 12px;
+      font-size: 1.1rem;
+      min-width: 280px;
+    }
+    .form-row input[type="number"],
+    .form-row input[type="text"] {
+      padding: 8px;
+      font-size: 0.95rem;
+      min-width: 110px;
+    }
+    .ders-container {
+      background-color: #e9f2fc;
+      border: 1px solid #bfd3ee;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .ders-header h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #0b0b40;
+      font-size: 1.2rem;
+    }
+    .calculate-button {
+      background-color: #0b0b40;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hesapla-btn {
+      background-color: #2a5298;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 15px;
+    }
+    .ders-sonuc {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+    #sonuc {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+    }
+    #sonuc h3 {
+      margin-top: 0;
+      color: #0b0b40;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .gecmis-donem-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 700px;
+      background: #f8faff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+      padding: 32px 24px 24px 24px;
+      font-size: 1.25rem;
+    }
+    .gecmis-donem-center table {
+      font-size: 1.15rem;
+      width: 100%;
+    }
+    .gecmis-donem-center input, .gecmis-donem-center button {
+      font-size: 1.1rem;
+      padding: 8px 12px;
+    }
+    .gecmis-donem-center .btn {
+      min-width: 80px;
+    }
+  </style>
+
+{{> header 
+pageButtons='
+<div class="user-menu" id="userMenu">
+  <img src="/img/user-icon.png" alt="kullanıcı ikonu" />
+  <div id="userDropdownToggle" style="display: flex; align-items: center; cursor: pointer;">
+    <span id="userName"></span>
+    <span class="arrow" id="arrow">▾</span>
+  </div>
+  <div class="dropdown" id="dropdown" style="display:none; position:absolute; background:white; border:1px solid #ccc; padding:5px;">
+    <a href="/login/logout" style="text-decoration: none; color: inherit;"><button id="logoutBtn">Çıkış Yap</button></a>
+    <button id="deleteAccountBtn">Hesabı Sil</button>
+  </div>
+</div>'
+}}
+  <main class="calculator-page">
+    <h2 class="section-title">NOT HESAPLAMA</h2>
+
+    <!-- İŞLEM ve GENEL SEÇENEKLER (form değil, sadece seçim alanı) -->
+    <div class="form-row">
+      <label>İŞLEM</label>
+      <select id="islem">
+        <option value="">Seçiniz</option>
+        <option value="genel">Genel not ortalama hesabı</option>
+        <option value="donem">Dönem not ortalama hesabı</option>
+      </select>
+    </div>
+
+    <div id="genelAltSecenekler" class="form-row hidden">
+      <label>Genel Seçenek</label>
+      <select id="genelSecenek">
+        <option value="toplam">Toplam kredi ve ağırlıklı notla hesapla</option>
+        <option value="gecmis">Geçmiş dönemleri ayrı ayrı girerek hesapla</option>
+      </select>
+    </div>
+
+    <!-- 1. Toplam Kredi/Ağırlıklı Not ile Hesaplama -->
+    <div id="toplamKrediOrtalama" class="hidden">
+      <form id="toplamKrediForm">
+        <div class="form-row">
+          <label>Mevcut Toplam Kredi</label>
+          <input type="number" id="mevcutKredi" min="0" step="0.5" required />
+        </div>
+        <div class="form-row">
+          <label>Mevcut Ortalama</label>
+          <input type="number" id="mevcutOrtalama" min="0" max="4" step="0.01" required />
+        </div>
+        
+      </form>
+    </div>
+
+    <!-- 2. Genel Dersler ile Hesaplama -->
+    <div id="genelDersler" class="hidden">
+      <form id="genelDersForm">
+        <div class="form-row">
+          <label>NOT SİSTEMİ</label>
+          <select id="notSistemi">
+            <option value="">Seçiniz</option>
+            <option>AA, BA, BB, CB, CC, DC, DD, FD, FF</option>
+            <option>AA, BA, BB, BC, CB, CC, DC, DD, FD, FF</option>
+            <option>A, A-, B+, B, B-, C+, C, C-, D+, D, D-, F</option>
+            <option>A1, A2, A3, B1, B2, B3, C1, C2, D1, D2, F1, F2</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>DERS SAYISI</label>
+          <input type="number" id="dersSayisi" min="1" max="20" value="" placeholder="Ders sayısı" />
+        </div>
+        <div id="dersAlanlari"></div>
+        <button type="submit" class="btn btn-primary">Hesapla</button>
+      </form>
+    </div>
+
+    <!-- 3. Dönem Dersleri ile Hesaplama -->
+    <div id="donemDersler" class="hidden">
+      <form id="donemDersForm">
+        <div class="form-row">
+          <label>NOT SİSTEMİ</label>
+          <select id="donemNotSistemi">
+            <option value="">Seçiniz</option>
+            <option>AA, BA, BB, CB, CC, DC, DD, FD, FF</option>
+            <option>AA, BA, BB, BC, CB, CC, DC, DD, FD, FF</option>
+            <option>A, A-, B+, B, B-, C+, C, C-, D+, D, D-, F</option>
+            <option>A1, A2, A3, B1, B2, B3, C1, C2, D1, D2, F1, F2</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>DERS SAYISI</label>
+          <input type="number" id="donemDersSayisi" min="1" max="20" value="" placeholder="Ders sayısı" />
+        </div>
+        <div id="donemDersAlanlari"></div>
+        <!-- <button type="submit" class="btn btn-primary">Hesapla</button> -->
+      </form>
+      <div class="mt-4">
+        <div id="donemDersSonuclari"></div>
+      </div>
+    </div>
+
+    <!-- 4. Geçmiş Dönemleri Ayrı Ayrı Girerek Hesaplama (sadece ilgili seçimde gösterilecek) -->
+    <div id="gecmisDonemArayuz" class="hidden gecmis-donem-center">
+      <form id="donemForm">
+        <table class="table table-dark table-striped" id="donemTable">
+          <thead>
+            <tr>
+              <th>Dönem Adı</th>
+              <th>Kredi</th>
+              <th>Ortalama</th>
+              <th>Sil</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" class="form-control" name="donem[]" placeholder="Örn: Güz 2023" required></td>
+              <td><input type="number" class="form-control" name="kredi[]" min="1" required></td>
+              <td><input type="number" class="form-control" name="ortalama[]" min="0" max="4" step="0.01" required></td>
+              <td><button type="button" class="btn btn-danger btn-sm remove-row">Sil</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-success" id="addRow">Dönem Ekle</button>
+        <button type="submit" class="btn btn-primary">Hesapla</button>
+      </form>
+      <div class="mt-4">
+  
+      </div>
+    </div>
+
+    <div id="sonuc"></div>
+
+    <!-- Kullanıcı menüsü işlevleri için script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const userNameElement = document.getElementById('userName');
+        const userName = "{{userName}}";
+        
+        if (userName) {
+          userNameElement.textContent = userName;
+          console.log("Kullanıcı adı ayarlandı:", userName);
+        } else {
+          console.log("Kullanıcı adı bulunamadı");
+        }
+
+        document.getElementById("userDropdownToggle").addEventListener("click", function() {
+          const dropdown = document.getElementById("dropdown");
+          dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        });
+
+        document.getElementById("deleteAccountBtn").addEventListener("click", async function() {
+          if (confirm("Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!")) {
+            try {
+              const response = await fetch("/login/delete-account", {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json"
+                }
+              });
+              const data = await response.json();
+              
+              if (data.success) {
+                alert(data.message);
+                window.location.href = data.redirect;
+              } else {
+                alert(data.message);
+              }
+            } catch (err) {
+              console.error("Hesap silme hatası:", err);
+              alert("Hesap silinirken bir hata oluştu");
+            }
+          }
+        });
+
+        const genelSecenek = document.getElementById('genelSecenek');
+        const gecmisDonemArayuz = document.getElementById('gecmisDonemArayuz');
+        const islemSelect = document.getElementById('islem');
+
+        function toggleGecmisDonemArayuz() {
+          if (islemSelect.value === 'genel') {
+            document.getElementById('genelAltSecenekler').classList.remove('hidden');
+            if (genelSecenek.value === 'gecmis') {
+              gecmisDonemArayuz.classList.remove('hidden');
+            } else {
+              gecmisDonemArayuz.classList.add('hidden');
+            }
+          } else {
+            document.getElementById('genelAltSecenekler').classList.add('hidden');
+            gecmisDonemArayuz.classList.add('hidden');
+          }
+        }
+
+        if (genelSecenek && gecmisDonemArayuz && islemSelect) {
+          genelSecenek.addEventListener('change', toggleGecmisDonemArayuz);
+          islemSelect.addEventListener('change', toggleGecmisDonemArayuz);
+          // Sayfa yüklenince de kontrol et
+          toggleGecmisDonemArayuz();
+        }
+
+        // Dinamik satır ekleme ve silme
+        const addRowBtn = document.getElementById('addRow');
+        const donemTable = document.getElementById('donemTable').getElementsByTagName('tbody')[0];
+        addRowBtn.addEventListener('click', function() {
+          const newRow = donemTable.rows[0].cloneNode(true);
+          newRow.querySelectorAll('input').forEach(input => input.value = '');
+          donemTable.appendChild(newRow);
+        });
+        donemTable.addEventListener('click', function(e) {
+          if (e.target.classList.contains('remove-row')) {
+            if (donemTable.rows.length > 1) {
+              e.target.closest('tr').remove();
+            }
+          }
+        });
+
+        // Hesaplama
+        document.getElementById('donemForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          let toplamKredi = 0;
+          let toplamAgirlikli = 0;
+          let dersSonuclari = [];
+          donemTable.querySelectorAll('tr').forEach(row => {
+            const dersAdi = row.querySelector('input[name="donem[]"]').value;
+            const kredi = parseFloat(row.querySelector('input[name="kredi[]"]').value);
+            const ort = parseFloat(row.querySelector('input[name="ortalama[]"]').value);
+            if (!isNaN(kredi) && !isNaN(ort)) {
+              toplamKredi += kredi;
+              toplamAgirlikli += kredi * ort;
+              let mesaj = `<b>${dersAdi}</b><div class='indented'>Kredi: ${kredi}, Ortalama: ${ort}</div>`;
+              dersSonuclari.push(`<div style='margin-bottom:12px;'>${mesaj}</div>`);
+            }
+          });
+          const genelOrtalama = toplamKredi > 0 ? (toplamAgirlikli / toplamKredi).toFixed(2) : '-';
+          document.getElementById('genelOrtalama').textContent = genelOrtalama;
+          document.getElementById('donemDersSonuclari').innerHTML = dersSonuclari.join('');
+        });
+
+        // Sayfa yüklendiğinde Genel Seçenek satırını gizle
+        var genelSecenekRow = document.getElementById('genelSecenekRow') || document.getElementById('genelAltSecenekler');
+        if (genelSecenekRow) {
+          genelSecenekRow.classList.add('hidden');
+        }
+      });
+    </script>
+    
+    <!-- Not hesaplama fonksiyonları için harici script dosyası -->
+    <script src="/js/nothesaplama.js"></script>
+  </main>

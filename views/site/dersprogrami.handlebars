@@ -1,0 +1,348 @@
+{{> header 
+pageButtons='
+<div class="user-menu" id="userMenu">
+  <img src="/img/user-icon.png" alt="kullanıcı ikonu" />
+  <div id="userDropdownToggle" style="display: flex; align-items: center; cursor: pointer;">
+    <span id="userName"></span>
+    <span class="arrow" id="arrow">▾</span>
+  </div>
+  <div class="dropdown" id="dropdown" style="display:none; position:absolute; background:white; border:1px solid #ccc; padding:5px;">
+    <a href="/login/logout" style="text-decoration: none; color: inherit;"><button id="logoutBtn">Çıkış Yap</button></a>
+    <button id="deleteAccountBtn">Hesabı Sil</button>
+  </div>
+</div>'
+}}
+
+<main class="schedule-page">
+  <h2 class="section-title">DERS PROGRAMI</h2>
+  <div class="schedule-grid">
+    <div class="day-column">
+      <h3>Pazartesi</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Pazartesi">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Pazartesi")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Salı</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Salı">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Salı")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Çarşamba</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Çarşamba">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Çarşamba")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Perşembe</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Perşembe">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Perşembe")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Cuma</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Cuma">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Cuma")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Cumartesi</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Cumartesi">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Cumartesi")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="day-column">
+      <h3>Pazar</h3>
+      <div class="entry">
+        <input type="time" class="ders-saati" />
+        <input type="text" class="ders-adi" placeholder="Etkinlik..." />
+        <button class="add-btn" data-gun="Pazar">Ekle</button>
+        <ul class="list">
+          {{#each dersler}}
+            {{#if (eq this.gun "Pazar")}}
+              <li>
+                {{this.baslangicSaati}} - {{this.dersAdi}}
+                <button class="delete-btn" data-id="{{this._id}}">Sil</button>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>      
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Kullanıcı adı ayarlama
+  const userNameElement = document.getElementById('userName');
+  const userName = "{{userName}}";
+  
+  if (userName) {
+    userNameElement.textContent = userName;
+  }
+
+  // Dropdown menü
+  document.getElementById("userDropdownToggle").addEventListener("click", function() {
+    const dropdown = document.getElementById("dropdown");
+    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  });
+
+  // Ders ekleme işlevi
+  document.querySelectorAll('.add-btn').forEach(button => {
+    button.addEventListener('click', async function() {
+      const entry = this.closest('.entry');
+      const saat = entry.querySelector('.ders-saati').value;
+      const dersAdi = entry.querySelector('.ders-adi').value;
+      const gun = this.dataset.gun;
+
+      if (!saat || !dersAdi) {
+        alert('Lütfen saat ve ders adını giriniz!');
+        return;
+      }
+
+      console.log('Ders ekleniyor:', { gun, saat, dersAdi });
+
+      try {
+        const response = await fetch('/dersprogrami/ders-ekle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            dersAdi: dersAdi,
+            gun: gun,
+            baslangicSaati: saat,
+            bitisSaati: saat, // Şimdilik başlangıç saati ile aynı
+            sinif: 'A101', // Varsayılan değer
+            ogretmen: 'Öğretmen', // Varsayılan değer
+            kredi: 3, // Varsayılan değer
+            renk: '#3498db' // Varsayılan değer
+          })
+        });
+
+        const data = await response.json();
+        console.log('Sunucu yanıtı:', data);
+
+        if (data.success) {
+          console.log('Ders başarıyla eklendi');
+          // Sayfayı yenilemek yerine dersleri güncelle
+          updateDersListesi(data.dersler);
+          // Form alanlarını temizle
+          entry.querySelector('.ders-saati').value = '';
+          entry.querySelector('.ders-adi').value = '';
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        console.error('Ders ekleme hatası:', err);
+        alert('Ders eklenirken bir hata oluştu');
+      }
+    });
+  });
+
+  // Ders listesini güncelleme fonksiyonu
+  function updateDersListesi(dersler) {
+    // Her gün için listeyi temizle
+    document.querySelectorAll('.list').forEach(list => {
+      list.innerHTML = '';
+    });
+
+    // Yeni dersleri ekle
+    dersler.forEach(ders => {
+      // Gün sütununu bul
+      const gunSutunlari = document.querySelectorAll('.day-column');
+      gunSutunlari.forEach(sutun => {
+        const gunBaslik = sutun.querySelector('h3').textContent;
+        if (gunBaslik === ders.gun) {
+          const list = sutun.querySelector('.list');
+          const li = document.createElement('li');
+          li.innerHTML = `
+            ${ders.baslangicSaati} - ${ders.dersAdi}
+            <button class="delete-btn" data-id="${ders._id}">Sil</button>
+          `;
+          list.appendChild(li);
+        }
+      });
+    });
+
+    // Silme butonlarına event listener ekle
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const dersId = this.dataset.id;
+        
+        if (confirm('Bu dersi silmek istediğinizden emin misiniz?')) {
+          try {
+            const response = await fetch(`/dersprogrami/ders-sil/${dersId}`, {
+              method: 'DELETE'
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+              alert(data.message);
+              // Silinen dersi listeden kaldır
+              this.closest('li').remove();
+            } else {
+              alert(data.message);
+            }
+          } catch (err) {
+            console.error('Ders silme hatası:', err);
+            alert('Ders silinirken bir hata oluştu');
+          }
+        }
+      });
+    });
+  }
+
+  // Hesap silme
+  document.getElementById("deleteAccountBtn").addEventListener("click", async function() {
+    if (confirm("Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!")) {
+      try {
+        const response = await fetch("/login/delete-account", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(data.message);
+          window.location.href = data.redirect;
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        console.error("Hesap silme hatası:", err);
+        alert("Hesap silinirken bir hata oluştu");
+      }
+    }
+  });
+
+  // Sayfa ilk yüklendiğinde silme butonlarına event listener ekle
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', async function() {
+      const dersId = this.dataset.id;
+      if (confirm('Bu dersi silmek istediğinizden emin misiniz?')) {
+        try {
+          const response = await fetch(`/dersprogrami/ders-sil/${dersId}`, {
+            method: 'DELETE'
+          });
+          const data = await response.json();
+          if (data.success) {
+            alert(data.message);
+            this.closest('li').remove();
+          } else {
+            alert(data.message);
+          }
+        } catch (err) {
+          console.error('Ders silme hatası:', err);
+          alert('Ders silinirken bir hata oluştu');
+        }
+      }
+    });
+  });
+});
+</script>
+
+<style>
+.delete-btn {
+  margin-left: 10px;
+  padding: 2px 8px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #cc0000;
+}
+
+.list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0;
+  padding: 5px;
+  background-color: #f8f9fa;
+  border-radius: 3px;
+}
+</style>
+
+

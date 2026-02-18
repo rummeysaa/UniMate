@@ -1,0 +1,58 @@
+{{>header}}
+
+
+  <main class="register-container">
+    <form class="register-form" action="/signup" method="post" id="register-form">
+      <label for="name">İSİM</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="surname">SOYİSİM</label>
+      <input type="text" id="surname" name="surname" required>
+
+      <label for="email">E-MAİL</label>
+      <input type="email" id="email"  name="email"  required> 
+
+      <label for="password">ŞİFRE</label>
+      <input type="password" id="password" name="password" autocomplete="on"
+       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*._=+\-]).{15,}" 
+             title="Şifre en az 15 karakter uzunluğunda olmalı ve en az bir büyük harf, bir küçük harf,bir rakam ve bir özel karakter(!@#$%^&*_=+-) içermelidir!"
+             required>
+
+      <label for="password2">ŞİFRE TEKRAR</label>
+      <input type="password" id="password2" name="password2"  autocomplete="on"required>
+
+      <div class="kvkk">
+        <input type="checkbox" id="kvkk"  name="kvkk" required>
+        <label for="kvkk">KVKK</label>
+      </div>
+
+      <button type="submit" class="signup-button">KAYIT OL</button>
+     
+    </form>
+
+
+  </main>
+   <script>
+    const  goRegisterBtn =document.getElementById('register-form')
+    goRegisterBtn.addEventListener('submit', (e)=>{
+      e.preventDefault();
+
+      const formData  = new FormData(e.target)
+      fetch('/signup/add',{
+        method:'post',
+        body: formData
+      }).then(response=>response.json()
+      ).then((data)=>{
+       if(data.success){
+           window.location.href = '/dashboard';
+    } else {
+      alert(data.message);
+    }
+  })
+  .catch((err) => {
+    alert('Bir hata oluştu!');
+  });
+});
+
+  </script>
+  
